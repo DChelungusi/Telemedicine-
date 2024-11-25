@@ -1,0 +1,51 @@
+onst express = require('express');
+const router = express.Router();
+const { loginUser, registerUser } = require('../services/authService');
+
+// Login route
+router.post('/login', loginUser);
+
+// Register route
+router.post('/register', registerUser);
+
+module.exports = router;
+
+// appointment routes//
+const express = require('express');
+const router = express.Router();
+const { 
+    getAppointments, 
+    bookAppointment, 
+    updateAppointment 
+} = require('../services/appointmentService');
+
+// Retrieve all appointments for a specific user
+router.get('/', getAppointments);
+
+// Book a new appointment
+router.post('/', bookAppointment);
+
+// Update appointment status
+router.put('/:id', updateAppointment);
+
+module.exports = router;
+
+//Doctors routes//
+const express = require('express');
+const router = express.Router();
+const { getDoctors } = require('../services/doctorService');
+
+// Fetch available doctors and schedules
+router.get('/', getDoctors);
+
+module.exports = router;
+
+//prescription//
+const express = require('express');
+const router = express.Router();
+const { getPrescriptions } = require('../services/prescriptionService');
+
+// Retrieve prescriptions for a patient
+router.get('/:patient_id', getPrescriptions);
+
+module.exports = router;

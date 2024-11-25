@@ -1,0 +1,89 @@
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const db = require('../database/connection'); // Example database connection
+
+// Login User
+const loginUser = async (req, res) => {
+    const { email, password } = req.body;
+    try {
+        const user = await db.query('SELECT * FROM users WHERE email = ?', [email]);
+        if (user.length === 0 || !bcrypt.compareSync(password, user[0].password)) {
+            return res.status(401).json({ message: 'Invalid email or password' });
+        }
+
+        const token = jwt.sign({ id: user[0].id, role: user[0].role }, process.env.JWT_SECRET, {
+            expiresIn: '1h',
+        });
+
+        res.status(200).json({ token });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
+
+// Register User
+const registerUser = async (req, res) => {
+    const { name, email, password } = req.body;
+    try {
+        const hashedPassword = bcrypt.hashSync(password, 10);
+        await db.query('INSERT INTO users (name, email, password) VALUES (?, ?, ?)', [
+            name,
+            email,
+            hashedPassword,
+        ]);
+
+        res.status(201).json({ message: 'User registered successfully' });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
+
+module.exports = { loginUser, registerUser };
+
+// Appointment service//
+const db = require('../database/connection');
+
+// Retrieve all appointments for a user
+const getAppointments = async (req, res) => {
+    const { id, role } = req.user;
+    try {
+        const query =
+            role === 'patient'
+                ? 'SELECT * FROM appointments WHERE patient_id = ?'
+                : 'SELECT * FROM appointments WHERE doctor_id = ?';
+        const appointments = await db.query(query, [id]);
+
+        res.status(200).json(appointments);
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
+
+// Book a new appointment
+const bookAppointment = async (req, res) => {
+    const { patient_id, doctor_id, date, time } = req.body;
+    try {
+        await db.query(
+            'INSERT INTO appointments (patient_id, doctor_id, date, time, status) VALUES (?, ?, ?, ?, ?)',
+            [patient_id, doctor_id, date, time, 'pending']
+        );
+
+        res.status(201).json({ message: 'Appointment booked successfully' });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
+
+// Update appointment status
+const updateAppointment = async (req, res) => {
+    const { id } = req.params;
+    const { status } = req.body;
+    try {
+        await db.query('UPDATE appointments SET status = ? WHERE id = ?', [status, id]);
+        res.status(200).json({ message: 'Appointment status updated successfully' });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+};
+
+module.exports = { getAppointments, bookAppointment, updateAppointment };

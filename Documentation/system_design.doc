@@ -1,0 +1,62 @@
+# TeleMed: System Design Documentation
+
+## Overview
+TeleMed is a comprehensive telemedicine platform designed to connect patients, doctors, and administrators through a seamless digital experience. The platform enables appointment booking, patient management, remote consultations, and system administration.
+
+## System Architecture
+- **Frontend**: HTML, CSS, JavaScript (optional: React, Angular).
+- **Backend**: Node.js with Express.js for API development.
+- **Database**: MySQL for data storage and management.
+- **Hosting**: Deployed using cloud services (e.g., AWS, Azure).
+
+## Database Schema
+- **patients**: Stores patient details (name, age, contact, medical history, etc.).
+- **doctors**: Stores doctor details (specialization, availability, etc.).
+- **appointments**: Manages patient-doctor appointment schedules.
+- **admin**: Manages system administrator credentials and roles.
+- **messages**: Handles patient-doctor communication logs.
+- **prescriptions**: Records prescribed medicines and instructions.
+
+## API Endpoints
+### Authentication
+- `POST /login`: Authenticate users (patients, doctors, or admin).
+- `POST /register`: Register new patients.
+
+### Appointment Management
+- `GET /appointments`: Retrieve all appointments for a specific user.
+- `POST /appointments`: Book a new appointment.
+- `PUT /appointments/:id`: Update appointment status (e.g., confirmed, canceled).
+
+### Doctor Scheduling
+- `GET /doctors`: Fetch available doctors and their schedules.
+
+### Prescriptions
+- `GET /prescriptions/:patient_id`: Retrieve prescriptions for a specific patient.
+
+## UI Features
+### Patient Portal
+- Registration and profile management.
+- Book and view appointments.
+- Access medical history.
+
+### Doctor Portal
+- Manage schedules and appointments.
+- Communicate with patients.
+
+### Admin Dashboard
+- System oversight.
+- Manage users and platform settings.
+
+## Security Considerations
+- Implement JWT-based authentication for secure user sessions.
+- Hash passwords using bcrypt for data protection.
+- Input validation to prevent SQL injection and XSS attacks.
+
+## Deployment
+- Use Docker containers for scalability.
+- CI/CD pipeline for automated builds and deployments.
+
+## Future Enhancements
+- Add video consultation capabilities.
+- Integrate with external pharmacy services for prescription fulfillment.
+- AI-based appointment recommendations based on user preferences.
